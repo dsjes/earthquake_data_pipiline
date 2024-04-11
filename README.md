@@ -2,7 +2,7 @@
 
 ### 此專案欲搜集地震、災害資料，進行資料處理，最後以視覺化報表呈現
 
-#### 特色
+### 特色
 1. 使用 docker 虛擬環境開發
 2. 以 AWS S3 當作 Data Lake，存放 Source Data
 3. 以 Airflow 為排程工具，Airlfow 相關設定存放於 PostgresSQL 中
