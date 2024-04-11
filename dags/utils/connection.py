@@ -2,6 +2,7 @@ from contextlib import contextmanager
 import boto3
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 @contextmanager

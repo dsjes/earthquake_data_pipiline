@@ -162,5 +162,21 @@ with DAG(
         '''
     )
 
+    create_earthquake_report_status = PostgresOperator(
+        task_id='create_earthquake_report_status',
+        postgres_conn_id = 'airflow_postgres',
+        sql='''
+        CREATE TABLE IF NOT EXISTS earthquake_report_status (
+        earthquake_report_status_id INTEGER NOT NULL,
+        earthquake_report_id INTEGER NOT NULL,
+        status VARCHAR(20) NOT NULL,
+        PRIMARY KEY(earthquake_report_status_id),
+        CONSTRAINT fk_earthquake_report_status_earthquake_report
+            FOREIGN KEY(earthquake_report_id)
+            REFERENCES earthquake_report(earthquake_report_id)
+        )    
+        '''
+    )
 
-    create_table_area >> create_table_county >> create_table_earthquake_report >> create_table_earthquake_info >> create_table_intensity >> create_table_station_info >> create_table_station_earthquake_data
+
+    create_table_area >> create_table_county >> create_table_earthquake_report >> create_table_earthquake_info >> create_table_intensity >> create_table_station_info >> create_table_station_earthquake_data >> create_earthquake_report_status

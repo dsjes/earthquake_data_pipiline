@@ -56,7 +56,7 @@ def file_exists_on_S3(key):
 
 
 def task_get_earthquake_data(**context) -> dict:
-    API_KEY = '***REMOVED***'
+    EARTHQUAKE_API_KEY = os.getenv("EARTHQUAKE_API_KEY")
 
     start_time = context['ti'].xcom_pull(task_ids='transform_datetime_format', key='start_time')
     end_time = context['ti'].xcom_pull(task_ids='transform_datetime_format', key='end_time')
