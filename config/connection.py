@@ -12,7 +12,9 @@ def s3_session():
     S3_ACCESS_KEY_ID = os.getenv("S3_ACCESS_KEY_ID")
     S3_SECRET_ACCESS_KEY = os.getenv("S3_SECRET_ACCESS_KEY")
     session = boto3.Session(
-        aws_access_key_id=S3_ACCESS_KEY_ID, aws_secret_access_key=S3_SECRET_ACCESS_KEY
+        aws_access_key_id=S3_ACCESS_KEY_ID,
+        aws_secret_access_key=S3_SECRET_ACCESS_KEY,
+        region_name="ap-northeast-1",
     )
 
     # Creating S3 Resource From the Session.
@@ -32,6 +34,7 @@ def s3_client():
         "s3",
         aws_access_key_id=S3_ACCESS_KEY_ID,
         aws_secret_access_key=S3_SECRET_ACCESS_KEY,
+        region_name="ap-northeast-1",
     )
     try:
         yield s3
@@ -46,7 +49,7 @@ def postgres_conn():
     connection = pg_hook.get_conn()
     cursor = connection.cursor()
     try:
-        yield cursor
+        yield connection, cursor
     finally:
         cursor.close()
         connection.close()

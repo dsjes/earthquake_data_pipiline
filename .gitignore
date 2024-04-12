@@ -5,4 +5,4 @@ data.json
 /dags/__pycache__
 /dags/utils/__pycache__
 passwords.txt
-/config
+/config/.env

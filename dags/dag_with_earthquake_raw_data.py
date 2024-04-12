@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from utils.connection import s3_session, s3_client
+from config.connection import s3_session, s3_client
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import botocore
