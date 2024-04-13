@@ -41,7 +41,7 @@ def collect_earthquake_report_row_data(data, current_time):
     report_remark = data["ReportRemark"]
     web_uri = data["Web"]
     shakemap_image_uri = data["ShakemapImageURI"]
-    insert_time = current_time
+    created_at = current_time
     return (
         earthquake_number,
         report_type,
@@ -51,7 +51,7 @@ def collect_earthquake_report_row_data(data, current_time):
         report_remark,
         web_uri,
         shakemap_image_uri,
-        insert_time,
+        created_at,
     )
 
 
@@ -66,7 +66,7 @@ def collect_earthquake_info(data, current_time):
     epicenter_longtitude = data["EarthquakeInfo"]["Epicenter"]["EpicenterLongitude"]
     magnitude_type = data["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeType"]
     magnitude_value = data["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"]
-    insert_time = current_time
+    created_at = current_time
     return (
         earthquake_number,
         origin_time,
@@ -77,7 +77,7 @@ def collect_earthquake_info(data, current_time):
         epicenter_longtitude,
         magnitude_type,
         magnitude_value,
-        insert_time,
+        created_at,
     )
 
 

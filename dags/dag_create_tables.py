@@ -19,7 +19,7 @@ with DAG(
         CREATE TABLE IF NOT EXISTS area (
         area_id SERIAL,
         area_name VARCHAR(50) UNIQUE NOT NULL,
-        insert_time TIMESTAMP NOT NULL,
+        created_at timestamptz DEFAULT NOW(),   
         PRIMARY KEY(area_id)
         )
         """,
@@ -32,7 +32,7 @@ with DAG(
         CREATE TABLE IF NOT EXISTS county (
         county_id SERIAL,
         county_name VARCHAR(50) UNIQUE NOT NULL,
-        insert_time TIMESTAMP NOT NULL,
+        created_at timestamptz DEFAULT NOW(),
         PRIMARY KEY(county_id)
         )
         """,
@@ -52,7 +52,7 @@ with DAG(
         report_remark VARCHAR(250) NOT NULL,
         web_uri VARCHAR(250) NOT NULL,
         shakemap_image_uri VARCHAR(250) NOT NULL,
-        insert_time TIMESTAMP NOT NULL,
+        created_at timestamptz DEFAULT NOW(),
         PRIMARY KEY(earthquake_report_id)
         )
         """,
@@ -73,11 +73,13 @@ with DAG(
         epicenter_longtitude FLOAT NOT NULL,
         magnitude_type VARCHAR(100) NOT NULL,
         magnitude_value FLOAT NOT NULL,
-        insert_time TIMESTAMP NOT NULL,
+        created_at timestamptz DEFAULT NOW(),
         PRIMARY KEY(earthquake_info_id),
         CONSTRAINT fk_earthquake_info_earthquake_report
             FOREIGN KEY(earthquake_number)
             REFERENCES earthquake_report(earthquake_number)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
         )
         """,
     )
@@ -93,17 +95,23 @@ with DAG(
         county_id INTEGER NOT NULL,
         info_status VARCHAR(50) NOT NULL,
         area_intensity FLOAT NOT NULL,
-        insert_time TIMESTAMP NOT NULL,
+        created_at timestamptz DEFAULT NOW(),
         PRIMARY KEY(intensity_id),
         CONSTRAINT fk_intensity_earthquake_report
             FOREIGN KEY(earthquake_number)
-            REFERENCES earthquake_report(earthquake_number),
+            REFERENCES earthquake_report(earthquake_number)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
         CONSTRAINT fk_intensity_area
             FOREIGN KEY(area_id)
-            REFERENCES area(area_id),
+            REFERENCES area(area_id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
         CONSTRAINT fk_intensity_county
             FOREIGN KEY(county_id)
             REFERENCES county(county_id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
         )
         """,
     )
@@ -118,7 +126,7 @@ with DAG(
         station_id VARCHAR(10) NOT NULL,
         station_latitude FLOAT NOT NULL,
         station_longitude FLOAT NOT NULL,
-        insert_time TIMESTAMP NOT NULL,
+        created_at timestamptz DEFAULT NOW(),
         PRIMARY KEY(station_info_id)
         )
         """,
@@ -147,14 +155,18 @@ with DAG(
         epicenter_distance FLOAT NOT NULL,
         seismic_intensity VARCHAR(20) NOT NULL,
         wave_image_uri VARCHAR(250) NOT NULL,
-        insert_time TIMESTAMP NOT NULL,
+        created_at timestamptz DEFAULT NOW(),
         PRIMARY KEY(station_earthquake_data_id),
         CONSTRAINT fk_earthquake_station_data_earthquake_report
             FOREIGN KEY(earthquake_number)
-            REFERENCES earthquake_report(earthquake_number),
+            REFERENCES earthquake_report(earthquake_number)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE            ,
         CONSTRAINT fk_earthquake_station_data_station_info
             FOREIGN KEY(station_info_id)
             REFERENCES station_info(station_info_id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE            
         )
         """,
     )
@@ -167,12 +179,13 @@ with DAG(
         earthquake_report_status_id SERIAL,
         earthquake_number INTEGER NOT NULL UNIQUE,
         status VARCHAR(20) NOT NULL,
-        insert_time TIMESTAMP NOT NULL,
+        created_at timestamptz DEFAULT NOW(),
         PRIMARY KEY(earthquake_report_status_id),
         CONSTRAINT fk_earthquake_report_status_earthquake_report
             FOREIGN KEY(earthquake_number)
             REFERENCES earthquake_report(earthquake_number)
-        )    
+            ON DELETE CASCADE
+            ON UPDATE CASCADE)    
         """,
     )
 
