@@ -1,6 +1,10 @@
 # earthquake_data_pipiline
 
+
 ### 此專案欲搜集地震、災害資料，進行資料處理，最後以視覺化報表呈現
+
+### Data Pipeline 架構
+![截圖 2024-04-13 下午1 15 17](https://github.com/dsjes/earthquake_data_pipiline/assets/106303589/613ddc57-b574-43f4-bbff-963ba7e00c72)
 
 ### 特色
 1. 使用 docker 虛擬環境開發
