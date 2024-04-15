@@ -19,7 +19,7 @@ with DAG(
         CREATE TABLE IF NOT EXISTS area (
         area_id SERIAL,
         area_name VARCHAR(50) UNIQUE NOT NULL,
-        created_at timestamptz DEFAULT NOW(),   
+        created_at timestamptz DEFAULT NOW(),
         PRIMARY KEY(area_id)
         )
         """,
@@ -122,7 +122,7 @@ with DAG(
         sql="""
         CREATE TABLE IF NOT EXISTS station_info (
         station_info_id SERIAL,
-        station_name VARCHAR(30) NOT NULL,
+        station_name VARCHAR(30) NOT NULL UNIQUE,
         station_id VARCHAR(10) NOT NULL,
         station_latitude FLOAT NOT NULL,
         station_longitude FLOAT NOT NULL,
@@ -166,7 +166,7 @@ with DAG(
             FOREIGN KEY(station_info_id)
             REFERENCES station_info(station_info_id)
             ON DELETE CASCADE
-            ON UPDATE CASCADE            
+            ON UPDATE CASCADE
         )
         """,
     )
@@ -185,7 +185,8 @@ with DAG(
             FOREIGN KEY(earthquake_number)
             REFERENCES earthquake_report(earthquake_number)
             ON DELETE CASCADE
-            ON UPDATE CASCADE)    
+            ON UPDATE CASCADE
+        )    
         """,
     )
 
