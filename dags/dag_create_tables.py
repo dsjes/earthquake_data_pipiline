@@ -1,6 +1,10 @@
 from airflow import DAG
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from datetime import datetime, timedelta
+import sys
+import os
+
+sys.path.append(os.path.abspath("/opt/airflow/config"))
 from config.connection import s3_session, s3_client
 
 default_args = {"owner": "Jess", "retries": 5, "retry_interval": timedelta(minutes=5)}

@@ -1,5 +1,9 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+import sys
+import os
+
+sys.path.append(os.path.abspath("/opt/airflow/config"))
 from config.connection import s3_session, s3_client, postgres_conn
 from datetime import datetime, timedelta
 import re
@@ -183,6 +187,7 @@ def collect_station_info_row_data(data):
 
 def get_station_info_id(station_name):
     with postgres_conn() as (connection, cursor):
+        print(station_name)
         sql_query = "select station_info_id from station_info where station_name = %s"
         cursor.execute(sql_query, (station_name,))
         result = cursor.fetchone()[0]
@@ -196,45 +201,46 @@ def collect_station_earthquake_data_row_data(data):
     for shaking_area in shaking_area_list:
         eq_station_list = shaking_area["EqStation"]
         for eq_station in eq_station_list:
-            earthquake_number = data["EarthquakeNo"]
-            pga_unit = eq_station["pga"]["unit"]
-            pga_ew_component = eq_station["pga"]["EWComponent"]
-            pga_ns_component = eq_station["pga"]["NSComponent"]
-            pga_v_component = eq_station["pga"]["VComponent"]
-            pga_int_scale_value = eq_station["pga"]["IntScaleValue"]
-            pgv_unit = eq_station["pgv"]["unit"]
-            pgv_ew_component = eq_station["pgv"]["EWComponent"]
-            pgv_ns_component = eq_station["pgv"]["NSComponent"]
-            pgv_v_component = eq_station["pgv"]["VComponent"]
-            pgv_int_scale_value = eq_station["pgv"]["IntScaleValue"]
-            station_name = eq_station["StationName"]
-            station_info_id = get_station_info_id(station_name)
-            info_status = eq_station["InfoStatus"]
-            back_azimuth = eq_station["BackAzimuth"]
-            epicenter_distance = eq_station["EpicenterDistance"]
-            seismic_intensity = eq_station["SeismicIntensity"]
-            wave_image_uri = eq_station["WaveImageURI"]
-            station_earthquake_data_row_data_list.append(
-                (
-                    earthquake_number,
-                    pga_unit,
-                    pga_ew_component,
-                    pga_ns_component,
-                    pga_v_component,
-                    pga_int_scale_value,
-                    pgv_unit,
-                    pgv_ew_component,
-                    pgv_ns_component,
-                    pgv_v_component,
-                    pgv_int_scale_value,
-                    station_info_id,
-                    info_status,
-                    back_azimuth,
-                    epicenter_distance,
-                    seismic_intensity,
-                    wave_image_uri,
+            if len(eq_station) != 0 and "pga" in eq_station and "pgv" in eq_station:
+                earthquake_number = data["EarthquakeNo"]
+                pga_unit = eq_station["pga"]["unit"]
+                pga_ew_component = eq_station["pga"]["EWComponent"]
+                pga_ns_component = eq_station["pga"]["NSComponent"]
+                pga_v_component = eq_station["pga"]["VComponent"]
+                pga_int_scale_value = eq_station["pga"]["IntScaleValue"]
+                pgv_unit = eq_station["pgv"]["unit"]
+                pgv_ew_component = eq_station["pgv"]["EWComponent"]
+                pgv_ns_component = eq_station["pgv"]["NSComponent"]
+                pgv_v_component = eq_station["pgv"]["VComponent"]
+                pgv_int_scale_value = eq_station["pgv"]["IntScaleValue"]
+                station_name = eq_station["StationName"]
+                station_info_id = get_station_info_id(station_name)
+                info_status = eq_station["InfoStatus"]
+                back_azimuth = eq_station["BackAzimuth"]
+                epicenter_distance = eq_station["EpicenterDistance"]
+                seismic_intensity = eq_station["SeismicIntensity"]
+                wave_image_uri = eq_station["WaveImageURI"]
+                station_earthquake_data_row_data_list.append(
+                    (
+                        earthquake_number,
+                        pga_unit,
+                        pga_ew_component,
+                        pga_ns_component,
+                        pga_v_component,
+                        pga_int_scale_value,
+                        pgv_unit,
+                        pgv_ew_component,
+                        pgv_ns_component,
+                        pgv_v_component,
+                        pgv_int_scale_value,
+                        station_info_id,
+                        info_status,
+                        back_azimuth,
+                        epicenter_distance,
+                        seismic_intensity,
+                        wave_image_uri,
+                    )
                 )
-            )
     return station_earthquake_data_row_data_list
 
 
@@ -286,7 +292,10 @@ def insert_earthquake_report_status_row_data(bucket_object):
         )
         print(earthquake_report_status_row_data)
         sql_query = insert_table_query("earthquake_report_status")
-        cursor.execute(sql_query, earthquake_report_status_row_data[0])
+        if len(earthquake_report_status_row_data) > 1:
+            cursor.executemany(sql_query, earthquake_report_status_row_data)
+        else:
+            cursor.execute(sql_query, earthquake_report_status_row_data[0])
         connection.commit()
 
 
@@ -319,7 +328,10 @@ def insert_intensity_row_data(data):
         intensity_row_data = collect_intensity_row_data(data)
         print(intensity_row_data)
         sql_query = insert_table_query("intensity")
-        cursor.execute(sql_query, intensity_row_data[0])
+        if len(intensity_row_data) > 1:
+            cursor.executemany(sql_query, intensity_row_data)
+        else:
+            cursor.execute(sql_query, intensity_row_data[0])
         connection.commit()
 
 
@@ -328,7 +340,10 @@ def insert_station_info_row_data(data):
         station_info_row_data = collect_station_info_row_data(data)
         print(station_info_row_data)
         sql_query = insert_table_query("station_info")
-        cursor.execute(sql_query, station_info_row_data[0])
+        if len(station_info_row_data) > 1:
+            cursor.executemany(sql_query, station_info_row_data)
+        else:
+            cursor.execute(sql_query, station_info_row_data[0])
         connection.commit()
 
 
@@ -337,8 +352,12 @@ def insert_station_earthquake_data_row_data(data):
         station_earthquake_data_row_data = collect_station_earthquake_data_row_data(
             data
         )
+        print(station_earthquake_data_row_data)
         sql_query = insert_table_query("station_earthquake_data")
-        cursor.execute(sql_query, station_earthquake_data_row_data[0])
+        if len(station_earthquake_data_row_data) > 1:
+            cursor.executemany(sql_query, station_earthquake_data_row_data)
+        else:
+            cursor.execute(sql_query, station_earthquake_data_row_data[0])
         connection.commit()
 
 
@@ -353,6 +372,7 @@ def insert_all_data():
         insert_county_row_data(data)
         insert_intensity_row_data(data)
         insert_station_info_row_data(data)
+        insert_station_earthquake_data_row_data(data)
 
 
 with DAG(

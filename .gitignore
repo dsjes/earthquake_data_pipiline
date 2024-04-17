@@ -7,3 +7,4 @@ data.json
 passwords.txt
 /config/.env
 /config/__pycache__
+postgresql-42.7.3.jar

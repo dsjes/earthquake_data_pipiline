@@ -1,18 +1,21 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+import sys
+import os
+
+sys.path.append(os.path.abspath("/opt/airflow/config"))
 from config.connection import s3_session, s3_client
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import botocore
 import json
-import os
 import pytz
 import requests
 import urllib.parse
 
 load_dotenv()
 
-default_args = {"owner": "Jess", "retries": 5, "retry_delay": timedelta(minutes=5)}
+default_args = {"owner": "Jess", "retries": 5, "retry_delay": timedelta(minutes=1)}
 
 
 def upload_to_S3(local_source_data_path, S3_file_path):
